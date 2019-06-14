@@ -50,15 +50,16 @@ private:
   sf::VertexArray m_vertices;
   sf::VertexArray m_vertices2;
 
-  void fill(Terrian tile, int x, int y, int sizeX, int sizeY);
   void updateDraw();
 
 public:
   Map () : mapsize(10,10) , map(mapsize.x * mapsize.y, Terrian()) { updateDraw(); }
   const Terrian& getTerrianCell(int x, int y) const;
+  void fill(Terrian tile, int x, int y, int sizeX, int sizeY);
   void makeLand(int x, int y, int sizeX, int sizeY);
   void makeSea(int x, int y, int sizeX, int sizeY);
   void makeMount(int x, int y, int sizeX, int sizeY);
+  void makeLava(int x, int y, int sizeX, int sizeY);
   GridSize getMapSize() const { return mapsize; }
   void showNormalMap() { vismap = false; mapChanged = true; }
   void showVisMap() { vismap = true; mapChanged = true;}
@@ -73,6 +74,7 @@ namespace MapTiles {
   Map::Terrian land("Land", true, sf::Color(36, 193, 39));
   Map::Terrian water("Sea", false, sf::Color(36, 87, 191));
   Map::Terrian mount("Mountain", false, sf::Color(153, 84, 32));
+  Map::Terrian lava("Lava", false, sf::Color(249, 79, 27));
 }
 
 // Map::Map() : map()
@@ -112,8 +114,12 @@ void Map::makeSea(int x, int y, int sizeX, int sizeY) {
   fill(MapTiles::water, x, y, sizeX, sizeY);
   mapChanged = true;
 }
-void Map::makeMount(int x, inqt y, int sizeX, int sizeY) {
+void Map::makeMount(int x, int y, int sizeX, int sizeY) {
   fill(MapTiles::mount, x, y, sizeX, sizeY);
+  mapChanged = true;
+}
+void Map::makeLava(int x, int y, int sizeX, int sizeY) {
+  fill(MapTiles::lava, x, y, sizeX, sizeY);
   mapChanged = true;
 }
 
@@ -279,6 +285,7 @@ public:
   GameManager ();
   // ~GameManager ();
   void readEventKey(sf::Keyboard::Key key);
+  void postTurn() { map.updateMap(); }
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override { target.draw(map, states); target.draw(p1i, states); };
 };
 
@@ -295,8 +302,8 @@ GameManager::GameManager() : p1i(Character(), 100, 100) {
   map.makeMount(5,0,1,5);
   map.updateMap();
 
-  map.showVisMap();
-  // map.showNormalMap();
+  // map.showVisMap();
+  map.showNormalMap();
 }
 
 void GameManager::readEventKey(sf::Keyboard::Key key) {
@@ -309,6 +316,7 @@ void GameManager::readEventKey(sf::Keyboard::Key key) {
   if (key == sf::Keyboard::Down) { moveCharacter(0,1); }
   if (key == sf::Keyboard::Left) { moveCharacter(-1,0); }
   if (key == sf::Keyboard::Right) { moveCharacter(1,0); }
+  if (key == sf::Keyboard::Space) { map.makeLava(p1i.getX(),p1i.getY(),1,1); }
 }
 
 void GameManager::moveCharacter(int dx, int dy) {
@@ -365,6 +373,8 @@ int main(int argc, char const *argv[]) {
     // deltaTime = clock.restart().asSeconds();
     // gm.process();
     // gm.process(deltaTime);
+
+    gm.postTurn();
     window.clear();
 
 

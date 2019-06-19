@@ -54,13 +54,20 @@ private:
   void updateDraw();
 
 public:
-  Map () : mapsize(10,10) , map(mapsize.x * mapsize.y, Terrian()) { updateDraw(); }
+  Map (GridSize size) : mapsize(size) , map(mapsize.x * mapsize.y, Terrian()) { updateDraw(); }
+  // Map () : mapsize(10,10) , map(mapsize.x * mapsize.y, Terrian()) { updateDraw(); }
+  Map () : Map(GridSize(10,10)) { }
   const Terrian& getTerrianCell(int x, int y) const;
   void fill(Terrian tile, int x, int y, int sizeX, int sizeY);
+  void fill(Terrian tile, int x, int y, GridSize size) { fill(tile, x,y, size.x, size.y); }
   void makeLand(int x, int y, int sizeX, int sizeY);
+  void makeLand(int x, int y, GridSize size) { makeLand(x,y, size.x, size.y); }
   void makeSea(int x, int y, int sizeX, int sizeY);
+  void makeSea(int x, int y, GridSize size) { makeSea(x,y, size.x, size.y); }
   void makeMount(int x, int y, int sizeX, int sizeY);
+  void makeMount(int x, int y, GridSize size) { makeMount(x,y, size.x, size.y); }
   void makeLava(int x, int y, int sizeX, int sizeY);
+  void makeLava(int x, int y, GridSize size) { makeLava(x,y, size.x, size.y); }
   GridSize getMapSize() const { return mapsize; }
   void showNormalMap() { vismap = false; mapChanged = true; }
   void showVisMap() { vismap = true; mapChanged = true;}
@@ -296,10 +303,11 @@ public:
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override { target.draw(map, states); target.draw(p1i, states); };
 };
 
-GameManager::GameManager() : p1i(Character(), 100, 100) {
-  map.setPosition(100,100);
+GameManager::GameManager() : p1i(Character(), 100, 100), map(GridSize(15,15)) {
+  map.setPosition(100, 100);
   // p1i.setPosition(100,100);
-  map.makeSea(0,0,20,10);
+  map.makeSea(0,0, map.getMapSize());
+  // map.makeSea(0,0,20,10);
   map.makeLand(0,0,5,5);
   // map.makeLand(7,7,5,5);
   map.makeLand(4,2,5,1);

@@ -46,6 +46,7 @@ private:
   std::vector<Terrian> map;
   bool vismap = false;
   bool mapChanged = false;
+  bool gridVisible = false;
 
   sf::VertexArray m_vertices;
   sf::VertexArray m_vertices2;
@@ -63,6 +64,8 @@ public:
   GridSize getMapSize() const { return mapsize; }
   void showNormalMap() { vismap = false; mapChanged = true; }
   void showVisMap() { vismap = true; mapChanged = true;}
+  void showGrid(bool visible) { gridVisible = true; mapChanged = true; }
+  void toggleGrid() { gridVisible = !gridVisible; mapChanged = true; }
   // const std::vector<Terrian> getMap() { return map; }
   MapRef getMap() { return MapRef(map, mapsize); }
   void updateMap();
@@ -219,7 +222,11 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
   // draw the vertex array
   target.draw(m_vertices2, states);
-  target.draw(m_vertices, states);
+
+  if (gridVisible) {
+    /* code */
+    target.draw(m_vertices, states);
+  }
 }
 
 // class Character : public sf::Drawable {
@@ -317,6 +324,7 @@ void GameManager::readEventKey(sf::Keyboard::Key key) {
   if (key == sf::Keyboard::Left) { moveCharacter(-1,0); }
   if (key == sf::Keyboard::Right) { moveCharacter(1,0); }
   if (key == sf::Keyboard::Space) { map.makeLava(p1i.getX(),p1i.getY(),1,1); }
+  if (key == sf::Keyboard::Tab) { map.toggleGrid(); }
 }
 
 void GameManager::moveCharacter(int dx, int dy) {

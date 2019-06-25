@@ -32,7 +32,8 @@ public:
     bool pass = true;
     sf::Color color;
     Terrian(std::string&& _name, bool passible, sf::Color _color) : name(_name), pass(passible), color(_color) {}
-    Terrian() : Terrian("Default", true, sf::Color(65,30,30)) {}
+    Terrian();
+    // Terrian() : Terrian("Default", true, sf::Color(65,30,30)) {}
   };
   struct MapRef {
     /* data */
@@ -81,13 +82,16 @@ public:
 };
 
 namespace MapTiles {
-  Map::Terrian land("Land", true, sf::Color(36, 193, 39));
-  Map::Terrian water("Sea", false, sf::Color(36, 87, 191));
-  Map::Terrian mount("Mountain", false, sf::Color(153, 84, 32));
-  Map::Terrian lava("Lava", false, sf::Color(249, 79, 27));
+  const Map::Terrian wip("Default", true, sf::Color(65,30,30));
+  const Map::Terrian land("Land", true, sf::Color(36, 193, 39));
+  const Map::Terrian water("Sea", false, sf::Color(36, 87, 191));
+  const Map::Terrian mount("Mountain", false, sf::Color(153, 84, 32));
+  const Map::Terrian lava("Lava", false, sf::Color(249, 79, 27));
 }
 
 // Map::Map() : map()
+
+inline Map::Terrian::Terrian() : Map::Terrian(MapTiles::wip) {}
 
 void Map::updateMap() {
   if (mapChanged) {
@@ -269,6 +273,8 @@ public:
     int x = 0;
     int y = 0;
 
+    bool edge = false;
+
   public:
     CharacterInst (const Character&& ch, int _x, int _y) : character(ch) {
       sprite.setSize(sf::Vector2f(tileSize.x - 1 ,tileSize.y - 1));
@@ -279,6 +285,9 @@ public:
     int getX() const { return x; }
     int getY() const { return y; }
     void move(int dx, int dy);
+    void toggleEdges() { edge = !edge; }
+    void setEdges(bool e) { edge = e; }
+    void updateChar() { if (edge) {sprite.setSize(sf::Vector2f(tileSize.x ,tileSize.y));} else {sprite.setSize(sf::Vector2f(tileSize.x - 1 ,tileSize.y - 1));} }
     // ~CharacterInst ();
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
@@ -332,7 +341,7 @@ void GameManager::readEventKey(sf::Keyboard::Key key) {
   if (key == sf::Keyboard::Left) { moveCharacter(-1,0); }
   if (key == sf::Keyboard::Right) { moveCharacter(1,0); }
   if (key == sf::Keyboard::Space) { map.makeLava(p1i.getX(),p1i.getY(),1,1); }
-  if (key == sf::Keyboard::Tab) { map.toggleGrid(); }
+  if (key == sf::Keyboard::Tab) { map.toggleGrid(); p1i.toggleEdges(); }
 }
 
 void GameManager::moveCharacter(int dx, int dy) {

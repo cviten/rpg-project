@@ -273,7 +273,7 @@ public:
     int x = 0;
     int y = 0;
 
-    bool edge = false;
+    bool edge = true  ;
 
   public:
     CharacterInst (const Character&& ch, int _x, int _y) : character(ch) {
@@ -285,8 +285,8 @@ public:
     int getX() const { return x; }
     int getY() const { return y; }
     void move(int dx, int dy);
-    void toggleEdges() { edge = !edge; }
-    void setEdges(bool e) { edge = e; }
+    void toggleEdges() { edge = !edge; updateChar(); }
+    void setEdges(bool e) { edge = e; updateChar(); }
     void updateChar() { if (edge) {sprite.setSize(sf::Vector2f(tileSize.x ,tileSize.y));} else {sprite.setSize(sf::Vector2f(tileSize.x - 1 ,tileSize.y - 1));} }
     // ~CharacterInst ();
 
@@ -317,13 +317,13 @@ GameManager::GameManager() : p1i(Character(), 100, 100), map(GridSize(15,15)) {
   // p1i.setPosition(100,100);
   map.makeSea(0,0, map.getMapSize());
   // map.makeSea(0,0,20,10);
-  map.makeLand(0,0,5,5);
+  map.makeLand(0,0,10,10);
   // map.makeLand(7,7,5,5);
-  map.makeLand(4,2,5,1);
-  map.makeLand(7,2,1,6);
-  map.makeLand(2,7,5,1);
-  map.makeLand(2,4,1,5);
-  map.makeMount(5,0,1,5);
+  // map.makeLand(4,2,5,1);
+  // map.makeLand(7,2,1,6);
+  // map.makeLand(2,7,5,1);
+  // map.makeLand(2,4,1,5);
+  map.makeMount(2,3,4,2);
   map.updateMap();
 
   // map.showVisMap();

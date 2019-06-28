@@ -5,22 +5,31 @@
 const int gameWidth = 1000;
 const int gameHeight = 700;
 
-struct CellSize {
-  int x = 50;
-  int y = 50;
-  CellSize(int _x, int _y) : x(_x), y(_y) {}
-  CellSize() : CellSize (50,50) {}
+struct XY {
+  /* data */
+  int x = 0;
+  int y = 0;
+protected:
+  XY(int _x, int _y) : x(_x), y(_y) {}
+  // XY() : XY (50,50) {}
 };
 
-// const int cellSizex = 50;
-// const int cellSizey = 50;
+struct CellSize : XY {
+  CellSize(int x, int y) : XY(x,y) {} //: x(_x), y(_y) {}
+  CellSize() : XY(50,50) {}
+};
 
 const CellSize tileSize(50,50);
 
-struct GridSize {
-  int x = 5;
-  int y = 5;
-  GridSize(int _x, int _y) : x(_x), y(_y) {}
+struct Point : XY {
+  Point(int x, int y) : XY(x,y) {}
+  Point() : Point (50,50) {}
+};
+// const int cellSizex = 50;
+// const int cellSizey = 50;
+
+struct GridSize : XY {
+  GridSize(int x, int y) : XY(x,y) {}
   GridSize() : GridSize (5,5) {}
 };
 
@@ -31,7 +40,7 @@ public:
     std::string name;
     bool pass = true;
     sf::Color color;
-    Terrian(std::string&& _name, bool passible, sf::Color _color) : name(_name), pass(passible), color(_color) {}
+    Terrian(std::string&& name, bool pass, sf::Color color) : name(name), pass(pass), color(color) {}
     Terrian();
     // Terrian() : Terrian("Default", true, sf::Color(65,30,30)) {}
   };
@@ -39,7 +48,7 @@ public:
     /* data */
     const std::vector<Terrian>& map;
     GridSize size;
-    MapRef(const std::vector<Terrian>& _map, GridSize mapsize) : map(_map), size(mapsize) {}
+    MapRef(const std::vector<Terrian>& map, GridSize mapsize) : map(map), size(mapsize) {}
   };
 private:
   /* data */
@@ -242,9 +251,18 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 // class Character : public sf::Drawable {
 class Character {
+public:
+  struct Stats {
+    /* data */
+    int maxHP;
+    int atk;
+    Stats(int hp, int _atk) : maxHP(hp), atk(_atk) {}
+    Stats() : Stats(100,15) {}
+  };
 private:
   /* data */
   std::string name = "Bot";
+  Stats stats;
 
 public:
   Character ();
@@ -273,13 +291,15 @@ public:
     int x = 0;
     int y = 0;
 
-    bool edge = true  ;
+    bool edge = true;
 
   public:
-    CharacterInst (const Character&& ch, int _x, int _y) : character(ch) {
-      sprite.setSize(sf::Vector2f(tileSize.x - 1 ,tileSize.y - 1));
+    // CharacterInst (const Character&& ch, int _x, int _y) : character(ch) {
+    // }
+    CharacterInst (const Character&& ch, int x, int y) : character(ch) {
+      sprite.setSize(sf::Vector2f(tileSize.x, tileSize.y));
       sprite.setFillColor(sf::Color::Red);
-      transform.setPosition(_x, _y);
+      transform.setPosition(x, y);
     }
     // CharacterInst (const Character&& ch) : CharacterInst(ch,0,0) {}
     int getX() const { return x; }

@@ -196,32 +196,14 @@ void Map::updateDraw() {
       quad[3].position = sf::Vector2f(i * tileSize.x, (j + 1) * tileSize.y);
 
 
-      // if (vismap) {
-      //   sf::Color color = (map[i + j * mapsize.x].pass) ? sf::Color::Green : sf::Color::Red;
-      // } else {
-      //   sf::Color color = map[i + j * mapsize.x].color;
-      // }
-
       sf::Color color = (vismap) ? ((map[i + j * mapsize.x].pass) ? sf::Color(20,200,20) : sf::Color(200,20,20)) : map[i + j * mapsize.x].color;
 
-      // sf::Color color = map[i + j * mapsize.x].color;
-      // Is useful for pass map
-      // sf::Color color = (map[i + j * mapsize.x].pass) ? sf::Color::Green : sf::Color::Red;
 
       quad[0].color = color;
       quad[1].color = color;
       quad[2].color = color;
       quad[3].color = color;
 
-
-      // grid[6].color = sf::Color::Green;
-      // grid[7].color = sf::Color::Green;
-
-      // define its 4 texture coordinates
-      // quad[0].texCoords = sf::Vector2f(tu * tileSize.x, tv * tileSize.y);
-      // quad[1].texCoords = sf::Vector2f((tu + 1) * tileSize.x, tv * tileSize.y);
-      // quad[2].texCoords = sf::Vector2f((tu + 1) * tileSize.x, (tv + 1) * tileSize.y);
-      // quad[3].texCoords = sf::Vector2f(tu * tileSize.x, (tv + 1) * tileSize.y);
     }
   }
 
@@ -274,12 +256,7 @@ public:
   Character ();
   std::string getName() const { return name;}
   bool getPass() const { return pass; }
-  // ~Character ();
-  // void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
-  //   //Figure out waht to do with transforms
-  //   states.transform *= transform.getTransform();
-  //   target.draw(sprite, states);
-  // };
+
 };
 
 Character::Character() {
@@ -295,14 +272,13 @@ public:
     sf::RectangleShape sprite;
     sf::Transformable transform;
     // sf::Transformable transform;
-    int x = 0;
-    int y = 0;
+    GridPoint gridPosition;
     int currHP;
 
     bool edge = true;
 
   public:
-    CharacterInst (const Character& ch, int x, int y, sf::Color color) : character(ch) {
+    CharacterInst (const Character& ch, int x, int y, sf::Color color) : character(ch), gridPosition(0,0) {
       // sprite.setSize(sf::Vector2f(tileSize.x, tileSize.y));
       sprite.setSize(tileSize);
       sprite.setFillColor(color);
@@ -310,21 +286,28 @@ public:
     }
     CharacterInst (const Character& ch, Point p, sf::Color color) : CharacterInst(ch, p.x, p.y, color) {}
     CharacterInst (const Character& ch, int x, int y) : CharacterInst(ch, x, y, sf::Color::Red) {}
-    CharacterInst (const Character& ch, Point p) : CharacterInst(ch, p.x, p.y, sf::Color::Red) {
-      std::cout << "x,y: " << x << " " << y << '\n';
-    }
+    CharacterInst (const Character& ch, Point p) : CharacterInst(ch, p.x, p.y, sf::Color::Red) {}
     CharacterInst (const Character& ch, sf::Color color) : CharacterInst(ch, 0, 0, color) {}
     CharacterInst (const Character& ch) : CharacterInst(ch, 0, 0, sf::Color::Red) {}
     // CharacterInst (const Character&& ch) : CharacterInst(ch,0,0) {}
-    GridPoint getGridPosition() const { return GridPoint(x,y); }
+    GridPoint getGridPosition() const { return gridPosition; }
     // Point getScreenPosition() const { return Point(transform.getOrigin().x,transform.getOrigin().y); }
-    void setScreenPosition(Point p) { transform.setPosition(p); }
-    int getX() const { return x; }
-    int getY() const { return y; }
+    void setGridPosition(int x, int y) { gridPosition.x = x; gridPosition.y = y; }
+    void setGridPosition(GridPoint point) { gridPosition = point; }
+    void setScreenPosition(Point point) { transform.setPosition(point); }
+    int getX() const { return gridPosition.x; }
+    int getY() const { return gridPosition.y; }
     void move(int dx, int dy);
+    void move(GridPoint point) { move(point.x, point.y); }
     void toggleEdges() { edge = !edge; updateChar(); }
     void setEdges(bool e) { edge = e; updateChar(); }
-    void updateChar() { if (edge) {sprite.setSize(tileSize);} else {sprite.setSize(sf::Vector2f(tileSize.x - 1 ,tileSize.y - 1));} }
+    void updateChar() {
+      if (edge) {
+        sprite.setSize(tileSize);
+      } else {
+        sprite.setSize(sf::Vector2f(tileSize.x - 1 ,tileSize.y - 1));
+      }
+    }
     // ~CharacterInst ();
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
@@ -338,9 +321,11 @@ private:
   Map map;
   Character p1;
   CharacterInst p1i;
-  Point mapPosition = Point(100,100);
+  Point mapOrigin = Point(100,100);
 
   void moveCharacter(int dx, int dy);
+  bool checkMovement(int x, int y) const;
+  bool checkMovement(GridPoint d) const { return checkMovement(d.x, d.y); }
 
 public:
   GameManager ();
@@ -352,17 +337,13 @@ public:
 };
 
 GameManager::GameManager() : p1i(Character()), map(GridSize(15,15)) {
-  map.setPosition(mapPosition);
-  p1i.setScreenPosition(mapPosition); //Find a way to make it more clean
+  map.setPosition(mapOrigin);
+  p1i.setScreenPosition(mapOrigin); //Find a way to make it more clean
   // p1i.setPosition(100,100);
   map.makeSea(0,0, map.getMapSize());
   // map.makeSea(0,0,20,10);
   map.makeLand(0,0,10,10);
-  // map.makeLand(7,7,5,5);
-  // map.makeLand(4,2,5,1);
-  // map.makeLand(7,2,1,6);
-  // map.makeLand(2,7,5,1);
-  // map.makeLand(2,4,1,5);
+
   map.makeMount(2,3,4,2);
   map.updateMap();
 
@@ -371,14 +352,25 @@ GameManager::GameManager() : p1i(Character()), map(GridSize(15,15)) {
 }
 
 void GameManager::setCharacterPosition(CharacterInst& ch, GridPoint point) {
+  if (checkMovement(point)) {
+    ch.setGridPosition(0,0);
+  }
+}
 
+bool GameManager::checkMovement(int x, int y) const {
+  if ( (x < 0) || (y < 0) || (x >= map.getMapSize().x) ||(y >= map.getMapSize().y) ) {
+    std::cout << "Out of the map!" << '\n';
+    return false;
+  } else if (!map.getTerrianCell(x, y).pass) {
+    std::cout << "Can't go into " << map.getTerrianCell(x, y).name << '\n';
+    return false;
+  } else {
+    return true;
+  }
 }
 
 void GameManager::readEventKey(sf::Keyboard::Key key) {
-  // if (key == sf::Keyboard::Up) { p1.move(0,-tileSize.y); }
-  // if (key == sf::Keyboard::Down) { p1.move(0,tileSize.y); }
-  // if (key == sf::Keyboard::Left) { p1.move(-tileSize.x,0); }
-  // if (key == sf::Keyboard::Right) { p1.move(tileSize.x,0); }
+
 
   if (key == sf::Keyboard::Up) { moveCharacter(0,-1); }
   if (key == sf::Keyboard::Down) { moveCharacter(0,1); }
@@ -389,24 +381,15 @@ void GameManager::readEventKey(sf::Keyboard::Key key) {
 }
 
 void GameManager::moveCharacter(int dx, int dy) {
-  if ( (p1i.getX() + dx < 0) || (p1i.getY() + dy < 0) || (p1i.getX() + dx >= map.getMapSize().x) ||(p1i.getY() + dy >= map.getMapSize().y) ) {
-    /* code */
-    std::cout << "Out of the map!" << '\n';
-  } else if (!map.getTerrianCell(p1i.getX() + dx, p1i.getY() + dy).pass) {
-    /* code */
-    std::cout << "Can't go into " << map.getTerrianCell(p1i.getX() + dx, p1i.getY() + dy).name << '\n';
-  } else {
-    /* code */
-  // } {
-    /* code */
+  if (checkMovement(p1i.getX() + dx, p1i.getY() + dy)) {
     p1i.move(dx,dy);
   }
 }
 
 void GameManager::CharacterInst::move(int dx, int dy) {
   transform.move(dx*tileSize.x, dy*tileSize.y);
-  x += dx;
-  y += dy;
+  gridPosition.x += dx;
+  gridPosition.y += dy;
 }
 
 // void GameManager::draw(sf::RenderTarget& target, sf::RenderStates states) const {

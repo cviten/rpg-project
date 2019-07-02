@@ -9,6 +9,7 @@ struct XY {
   /* data */
   int x = 0;
   int y = 0;
+  operator sf::Vector2f() const { return sf::Vector2f(x,y); }
 protected:
   XY(int _x, int _y) : x(_x), y(_y) {}
   // XY() : XY (50,50) {}
@@ -16,22 +17,25 @@ protected:
 
 struct CellSize : XY {
   CellSize(int x, int y) : XY(x,y) {} //: x(_x), y(_y) {}
-  CellSize() : XY(50,50) {}
+  CellSize() : CellSize(50,50) {}
 };
-
-const CellSize tileSize(50,50);
 
 struct Point : XY {
   Point(int x, int y) : XY(x,y) {}
   Point() : Point (50,50) {}
 };
-// const int cellSizex = 50;
-// const int cellSizey = 50;
 
 struct GridSize : XY {
   GridSize(int x, int y) : XY(x,y) {}
   GridSize() : GridSize (5,5) {}
 };
+
+struct GridPoint : XY {
+  GridPoint(int x, int y) : XY(x,y) {}
+  GridPoint() : GridPoint (1,1) {}
+};
+
+const CellSize tileSize(30,30);
 
 class Map : public sf::Drawable, public sf::Transformable {
 public:
@@ -68,6 +72,7 @@ public:
   // Map () : mapsize(10,10) , map(mapsize.x * mapsize.y, Terrian()) { updateDraw(); }
   Map () : Map(GridSize(10,10)) { }
   const Terrian& getTerrianCell(int x, int y) const;
+  const Terrian& getTerrianCell(GridPoint p) const { return getTerrianCell(p.x, p.y); }
   void fill(Terrian tile, int x, int y, int sizeX, int sizeY);
   void fill(Terrian tile, int x, int y, GridSize size) { fill(tile, x,y, size.x, size.y); }
   void makeLand(int x, int y, int sizeX, int sizeY);
@@ -263,10 +268,12 @@ private:
   /* data */
   std::string name = "Bot";
   Stats stats;
+  bool pass = false;
 
 public:
   Character ();
   std::string getName() const { return name;}
+  bool getPass() const { return pass; }
   // ~Character ();
   // void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
   //   //Figure out waht to do with transforms
@@ -290,24 +297,34 @@ public:
     // sf::Transformable transform;
     int x = 0;
     int y = 0;
+    int currHP;
 
     bool edge = true;
 
   public:
-    // CharacterInst (const Character&& ch, int _x, int _y) : character(ch) {
-    // }
-    CharacterInst (const Character&& ch, int x, int y) : character(ch) {
-      sprite.setSize(sf::Vector2f(tileSize.x, tileSize.y));
-      sprite.setFillColor(sf::Color::Red);
+    CharacterInst (const Character& ch, int x, int y, sf::Color color) : character(ch) {
+      // sprite.setSize(sf::Vector2f(tileSize.x, tileSize.y));
+      sprite.setSize(tileSize);
+      sprite.setFillColor(color);
       transform.setPosition(x, y);
     }
+    CharacterInst (const Character& ch, Point p, sf::Color color) : CharacterInst(ch, p.x, p.y, color) {}
+    CharacterInst (const Character& ch, int x, int y) : CharacterInst(ch, x, y, sf::Color::Red) {}
+    CharacterInst (const Character& ch, Point p) : CharacterInst(ch, p.x, p.y, sf::Color::Red) {
+      std::cout << "x,y: " << x << " " << y << '\n';
+    }
+    CharacterInst (const Character& ch, sf::Color color) : CharacterInst(ch, 0, 0, color) {}
+    CharacterInst (const Character& ch) : CharacterInst(ch, 0, 0, sf::Color::Red) {}
     // CharacterInst (const Character&& ch) : CharacterInst(ch,0,0) {}
+    GridPoint getGridPosition() const { return GridPoint(x,y); }
+    // Point getScreenPosition() const { return Point(transform.getOrigin().x,transform.getOrigin().y); }
+    void setScreenPosition(Point p) { transform.setPosition(p); }
     int getX() const { return x; }
     int getY() const { return y; }
     void move(int dx, int dy);
     void toggleEdges() { edge = !edge; updateChar(); }
     void setEdges(bool e) { edge = e; updateChar(); }
-    void updateChar() { if (edge) {sprite.setSize(sf::Vector2f(tileSize.x ,tileSize.y));} else {sprite.setSize(sf::Vector2f(tileSize.x - 1 ,tileSize.y - 1));} }
+    void updateChar() { if (edge) {sprite.setSize(tileSize);} else {sprite.setSize(sf::Vector2f(tileSize.x - 1 ,tileSize.y - 1));} }
     // ~CharacterInst ();
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
@@ -321,6 +338,7 @@ private:
   Map map;
   Character p1;
   CharacterInst p1i;
+  Point mapPosition = Point(100,100);
 
   void moveCharacter(int dx, int dy);
 
@@ -328,12 +346,14 @@ public:
   GameManager ();
   // ~GameManager ();
   void readEventKey(sf::Keyboard::Key key);
+  void setCharacterPosition(CharacterInst& ch, GridPoint point);
   void postTurn() { map.updateMap(); }
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override { target.draw(map, states); target.draw(p1i, states); };
 };
 
-GameManager::GameManager() : p1i(Character(), 100, 100), map(GridSize(15,15)) {
-  map.setPosition(100, 100);
+GameManager::GameManager() : p1i(Character()), map(GridSize(15,15)) {
+  map.setPosition(mapPosition);
+  p1i.setScreenPosition(mapPosition); //Find a way to make it more clean
   // p1i.setPosition(100,100);
   map.makeSea(0,0, map.getMapSize());
   // map.makeSea(0,0,20,10);
@@ -348,6 +368,10 @@ GameManager::GameManager() : p1i(Character(), 100, 100), map(GridSize(15,15)) {
 
   // map.showVisMap();
   map.showNormalMap();
+}
+
+void GameManager::setCharacterPosition(CharacterInst& ch, GridPoint point) {
+
 }
 
 void GameManager::readEventKey(sf::Keyboard::Key key) {

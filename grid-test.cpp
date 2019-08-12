@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include <stdexcept>
 #include <SFML/Graphics.hpp>
 
@@ -10,6 +11,7 @@ struct XY {
   int x = 0;
   int y = 0;
   operator sf::Vector2f() const { return sf::Vector2f(x,y); }
+  bool operator== (const XY& p) const { return (x == p.x && y == p.y);}
 protected:
   XY(int _x, int _y) : x(_x), y(_y) {}
   // XY() : XY (50,50) {}
@@ -88,6 +90,7 @@ public:
   void showVisMap() { vismap = true; mapChanged = true;}
   void showGrid(bool visible) { gridVisible = true; mapChanged = true; }
   void toggleGrid() { gridVisible = !gridVisible; mapChanged = true; }
+  void toggleVisMap() { vismap = !vismap; mapChanged = true; }
   // const std::vector<Terrian> getMap() { return map; }
   MapRef getMap() { return MapRef(map, mapsize); }
   void updateMap();
@@ -97,10 +100,16 @@ public:
 
 namespace MapTiles {
   const Map::Terrian wip("Default", true, sf::Color(65,30,30));
-  const Map::Terrian land("Land", true, sf::Color(36, 193, 39));
+  const Map::Terrian land("Land", true, sf::Color(36, 120, 39));
   const Map::Terrian water("Sea", false, sf::Color(36, 87, 191));
   const Map::Terrian mount("Mountain", false, sf::Color(153, 84, 32));
   const Map::Terrian lava("Lava", false, sf::Color(249, 79, 27));
+}
+
+namespace CharColors {
+  const sf::Color player(200, 70, 165);
+  const sf::Color bot(200, 70, 70);
+  const sf::Color defeatedBot(120, 40, 50);
 }
 
 // Map::Map() : map()
@@ -254,7 +263,8 @@ private:
 
 public:
   Character ();
-  std::string getName() const { return name;}
+  const std::string& getName() const { return name;}
+  const Stats& getStats() const { return stats; }
   bool getPass() const { return pass; }
 
 };
@@ -278,7 +288,7 @@ public:
     bool edge = true;
 
   public:
-    CharacterInst (const Character& ch, int x, int y, sf::Color color) : character(ch), gridPosition(0,0) {
+    CharacterInst (const Character& ch, int x, int y, sf::Color color) : character(ch), gridPosition(0,0), currHP(ch.getStats().maxHP) {
       // sprite.setSize(sf::Vector2f(tileSize.x, tileSize.y));
       sprite.setSize(tileSize);
       sprite.setFillColor(color);
@@ -289,11 +299,18 @@ public:
     CharacterInst (const Character& ch, Point p) : CharacterInst(ch, p.x, p.y, sf::Color::Red) {}
     CharacterInst (const Character& ch, sf::Color color) : CharacterInst(ch, 0, 0, color) {}
     CharacterInst (const Character& ch) : CharacterInst(ch, 0, 0, sf::Color::Red) {}
+    //-------------------------
+    const Character& getCharacter() const { return character; }
+
+    void takeDamage(int atk) { currHP -= atk; if (currHP <= 0) { sprite.setFillColor(CharColors::defeatedBot); }; }
+    void attack(CharacterInst& target) { target.takeDamage(character.getStats().atk); }
+
     // CharacterInst (const Character&& ch) : CharacterInst(ch,0,0) {}
     GridPoint getGridPosition() const { return gridPosition; }
     // Point getScreenPosition() const { return Point(transform.getOrigin().x,transform.getOrigin().y); }
     void setGridPosition(int x, int y) { gridPosition.x = x; gridPosition.y = y; }
     void setGridPosition(GridPoint point) { gridPosition = point; }
+    // GridPoint getGridPosition() const { return gridPosition; }
     void setScreenPosition(Point point) { transform.setPosition(point); }
     int getX() const { return gridPosition.x; }
     int getY() const { return gridPosition.y; }
@@ -321,11 +338,12 @@ private:
   Map map;
   Character p1;
   CharacterInst p1i;
+  CharacterInst enemy;
   Point mapOrigin = Point(100,100);
 
   void moveCharacter(int dx, int dy);
-  bool checkMovement(int x, int y) const;
-  bool checkMovement(GridPoint d) const { return checkMovement(d.x, d.y); }
+  bool checkMovement(int x, int y);
+  bool checkMovement(GridPoint d) { return checkMovement(d.x, d.y); }
 
 public:
   GameManager ();
@@ -333,18 +351,24 @@ public:
   void readEventKey(sf::Keyboard::Key key);
   void setCharacterPosition(CharacterInst& ch, GridPoint point);
   void postTurn() { map.updateMap(); }
-  void draw(sf::RenderTarget& target, sf::RenderStates states) const override { target.draw(map, states); target.draw(p1i, states); };
+  void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
+    target.draw(map, states);
+    target.draw(enemy, states);
+    target.draw(p1i, states);
+  };
 };
 
-GameManager::GameManager() : p1i(Character()), map(GridSize(15,15)) {
+GameManager::GameManager() : p1i(Character(), CharColors::player), enemy(Character(), CharColors::bot), map(GridSize(20,15)) {
   map.setPosition(mapOrigin);
-  p1i.setScreenPosition(mapOrigin); //Find a way to make it more clean
+  // p1i.setScreenPosition(mapOrigin); //Find a way to make it more clean
+  setCharacterPosition(p1i, GridPoint(5,3));
+  setCharacterPosition(enemy, GridPoint(4,2));
   // p1i.setPosition(100,100);
   map.makeSea(0,0, map.getMapSize());
   // map.makeSea(0,0,20,10);
-  map.makeLand(0,0,10,10);
+  map.makeLand(0,0,15,12);
 
-  map.makeMount(2,3,4,2);
+  // map.makeMount(2,3,4,2);
   map.updateMap();
 
   // map.showVisMap();
@@ -354,15 +378,22 @@ GameManager::GameManager() : p1i(Character()), map(GridSize(15,15)) {
 void GameManager::setCharacterPosition(CharacterInst& ch, GridPoint point) {
   if (checkMovement(point)) {
     ch.setGridPosition(0,0);
+    ch.setScreenPosition(mapOrigin);
+    ch.move(point);
   }
 }
 
-bool GameManager::checkMovement(int x, int y) const {
+bool GameManager::checkMovement(int x, int y) {
   if ( (x < 0) || (y < 0) || (x >= map.getMapSize().x) ||(y >= map.getMapSize().y) ) {
     std::cout << "Out of the map!" << '\n';
     return false;
   } else if (!map.getTerrianCell(x, y).pass) {
     std::cout << "Can't go into " << map.getTerrianCell(x, y).name << '\n';
+    return false;
+  } else if (GridPoint(x,y) == enemy.getGridPosition()) {
+    // std::cout << "Can't go into " << enemy.getCharacter().getName() << '\n';
+    p1i.attack(enemy);
+    std::cout << "Attacked " << enemy.getCharacter().getName() << '\n';
     return false;
   } else {
     return true;
@@ -378,6 +409,7 @@ void GameManager::readEventKey(sf::Keyboard::Key key) {
   if (key == sf::Keyboard::Right) { moveCharacter(1,0); }
   if (key == sf::Keyboard::Space) { map.makeLava(p1i.getX(),p1i.getY(),1,1); }
   if (key == sf::Keyboard::Tab) { map.toggleGrid(); p1i.toggleEdges(); }
+  if (key == sf::Keyboard::Q) { map.toggleVisMap(); }
 }
 
 void GameManager::moveCharacter(int dx, int dy) {

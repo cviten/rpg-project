@@ -223,7 +223,11 @@ namespace Game {
   }
 } /* Game */
 
-class GameObject : public sf::Drawable {
+struct Item {
+  /* data */
+};
+
+class MapObject : public sf::Drawable {
 private:
   /* data */
   sf::RectangleShape sprite;
@@ -237,14 +241,14 @@ protected:
   void changeColor(const sf::Color color) { sprite.setFillColor(color); }
 
 public:
-  GameObject (Point point, sf::Color spriteColor, bool pass, GridPoint startPoint);
+  MapObject (Point point, sf::Color spriteColor, bool pass, GridPoint startPoint);
   void move(int dx, int dy);
   void move(GridPoint dp) { move(dp.x, dp.y); }
   const GridPoint& getGridPosition() const { return position; }
   void setGridPosition(const GridPoint& point) { position = point; }
   Point getScreenPosition() const { return Point(transform.getPosition().x, transform.getPosition().y); }
   void setScreenPosition(Point point) { transform.setPosition(point); }
-  // ~GameObject ();
+  // ~MapObject ();
   void updateObject();
   void toggleEdges() { edge = !edge; updateObject(); }
   void setEdges(bool e) { edge = e; updateObject(); }
@@ -256,20 +260,20 @@ public:
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
 
-GameObject::GameObject(Point point, sf::Color color, bool pass = false, GridPoint startPoint = GridPoint()) : pass(pass), position(startPoint) {
+MapObject::MapObject(Point point, sf::Color color, bool pass = false, GridPoint startPoint = GridPoint()) : pass(pass), position(startPoint) {
   sprite.setSize(tileSize);
   sprite.setFillColor(color);
   transform.setPosition(point.x, point.y);
   move(startPoint);
 }
 
-void GameObject::move(int dx, int dy) {
+void MapObject::move(int dx, int dy) {
   transform.move(dx*tileSize.x, dy*tileSize.y);
   position.x += dx;
   position.y += dy;
 }
 
-void GameObject::updateObject() {
+void MapObject::updateObject() {
   if (edge) {
     sprite.setSize(tileSize);
   } else {
@@ -277,7 +281,7 @@ void GameObject::updateObject() {
   }
 }
 
-void GameObject::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+void MapObject::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   states.transform *= transform.getTransform();
   // target.draw(character, states);
   target.draw(sprite, states);
@@ -291,7 +295,7 @@ struct Stats {
   Stats() : Stats(30,15) {}
 };
 
-class Character : public GameObject {
+class Character : public MapObject {
 private:
   /* data */
   std::string name;
@@ -300,7 +304,7 @@ private:
   int currHP;
 
 public:
-  Character (Point point, sf::Color spriteColor = Game::Colors::bot, const std::string& name = "Bot", Stats stats = Stats()) : GameObject(point,spriteColor), currHP(stats.maxHP) {}
+  Character (Point point, sf::Color spriteColor = Game::Colors::bot, const std::string& name = "Bot", Stats stats = Stats()) : MapObject(point,spriteColor), currHP(stats.maxHP) {}
   const std::string& getName() const { return name;}
   const Stats& getStats() const { return stats; }
   void takeDamage(int atk) { currHP -= atk; if (currHP <= 0) { changeColor(Game::Colors::defeatedBot); setActive(false); }; }
@@ -311,20 +315,20 @@ public:
 class PlayerCharacter : public Character {
 private:
   /* data */
-  // std::vector<Item> v;
+  std::vector<Item> v;
 
 public:
   PlayerCharacter(Point point, sf::Color spriteColor = Game::Colors::player, const std::string& name = "Player", Stats stats = Stats()) : Character(point, spriteColor, name, stats) {}
   // ~Character ();
 };
 
-class Item : public GameObject {
+class ItemMap : public MapObject {
 private:
   /* data */
   std::string name;
 
 public:
-  Item (Point point, sf::Color spriteColor = Game::Colors::item, const std::string& name = "Item A") : GameObject(point, spriteColor, true), name(name) {}
+  Item (Point point, sf::Color spriteColor = Game::Colors::item, const std::string& name = "Item A") : MapObject(point, spriteColor, true), name(name) {}
   const std::string& getName() const { return name;}
   // ~Item ();
 };
@@ -349,26 +353,30 @@ public:
   GameManager ();
   // ~GameManager ();
   void readEventKey(sf::Keyboard::Key key);
-  void setGameObjectPosition(GameObject& go, GridPoint point);
+  void setMapObjectPosition(MapObject& go, GridPoint point);
   // void setCharacterPosition(Character& ch, GridPoint point);
   void postTurn() { map.updateMap(); }
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
     target.draw(map, states);
-    target.draw(bot, states);
-    target.draw(p1, states);
+    // target.draw(p1, states);
+    // target.draw(bot, states);
+    if (p1.isActive()) { target.draw(p1, states); }
+    if (bot.isActive()) { target.draw(bot, states); }
+    if (item.isActive()) { target.draw(item, states); }
   };
 };
 
 GameManager::GameManager() : p1(mapOrigin), bot(mapOrigin), item(mapOrigin), map(GridSize(20,15)) {
   map.setPosition(mapOrigin);
   // p1i.setScreenPosition(mapOrigin); //Find a way to make it more clean
-  setGameObjectPosition(p1, GridPoint(5,3));
-  setGameObjectPosition(bot, GridPoint(4,2));
-  setGameObjectPosition(bot, GridPoint(4,2));
 
   map.fill(MapTiles::water, 0,0, map.getMapSize());
 
   map.fill(MapTiles::land, 0,0, 15,12);
+
+  setMapObjectPosition(p1, GridPoint(5,3));
+  setMapObjectPosition(bot, GridPoint(4,2));
+  setMapObjectPosition(item, GridPoint(2,7));
 
   // map.makeMount(2,3,4,2);
   map.updateMap();
@@ -377,7 +385,7 @@ GameManager::GameManager() : p1(mapOrigin), bot(mapOrigin), item(mapOrigin), map
   map.showNormalMap();
 }
 
-void GameManager::setGameObjectPosition(GameObject& ch, GridPoint point) {
+void GameManager::setMapObjectPosition(MapObject& ch, GridPoint point) {
   if (checkMovement(point, false)) {
     ch.setGridPosition(zeroGrid);
     ch.setScreenPosition(mapOrigin);
@@ -416,7 +424,7 @@ void GameManager::readEventKey(sf::Keyboard::Key key) {
   if (key == sf::Keyboard::Left) { moveCharacter(-1,0); }
   if (key == sf::Keyboard::Right) { moveCharacter(1,0); }
   // if (key == sf::Keyboard::Space) { map.fill(MapTiles::lava, p1i.getX(),p1i.getY(),1,1); }
-  if (key == sf::Keyboard::Tab) { map.toggleGrid(); p1.toggleEdges(); bot.toggleEdges(); }
+  if (key == sf::Keyboard::Tab) { map.toggleGrid(); p1.toggleEdges(); bot.toggleEdges(); item.toggleEdges(); }
   if (key == sf::Keyboard::Q) { map.toggleVisMap(); }
 }
 

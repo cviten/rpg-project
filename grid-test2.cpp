@@ -225,9 +225,12 @@ namespace Game {
 
 struct Item {
   /* data */
+  std::string name;
 };
 
 class MapObject : public sf::Drawable {
+// public:
+  // enum MapObjectType {Char, Item};
 private:
   /* data */
   sf::RectangleShape sprite;
@@ -328,7 +331,7 @@ private:
   std::string name;
 
 public:
-  Item (Point point, sf::Color spriteColor = Game::Colors::item, const std::string& name = "Item A") : MapObject(point, spriteColor, true), name(name) {}
+  ItemMap (Point point, sf::Color spriteColor = Game::Colors::item, const std::string& name = "Item A") : MapObject(point, spriteColor, true), name(name) {}
   const std::string& getName() const { return name;}
   // ~Item ();
 };
@@ -341,7 +344,7 @@ private:
 
   PlayerCharacter p1;
   Character bot;
-  Item item;
+  ItemMap item;
   bool itemcheck = true;
   Point mapOrigin = Point(100,100);
 

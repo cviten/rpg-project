@@ -8,13 +8,13 @@ struct Item {
   std::string name;
 };
 
-class ItemMap : public MapObject {
+class ItemObject : public MapObject {
 private:
   /* data */
   std::string name;
 
 public:
-  ItemMap (Point point, sf::Color spriteColor = Game::Colors::item, const std::string& name = "Item A") : MapObject(point, spriteColor, true), name(name) {}
+  ItemObject (Point point, sf::Color spriteColor = Game::Colors::item, const std::string& name = "Item A") : MapObject(point, spriteColor, true), name(name) {}
   const std::string& getName() const { return name;}
   // ~Item ();
 };

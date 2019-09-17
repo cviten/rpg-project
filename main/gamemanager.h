@@ -13,7 +13,7 @@ private:
 
   PlayerCharacter p1;
   Character bot;
-  ItemMap item;
+  ItemObject item;
   bool itemcheck = true;
   Point mapOrigin = Point(100,100);
 

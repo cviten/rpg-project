@@ -48,7 +48,7 @@ struct GridPoint : XY {
 struct Rect {
   Point point;
   Size size;
-  Rect(Point point, Size size size) : point(point), size(size) {}
+  Rect(Point point, Size size) : point(point), size(size) {}
 };
 
 const CellSize tileSize(30,30);

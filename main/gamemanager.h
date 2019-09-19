@@ -5,6 +5,8 @@
 #include "character.h"
 #include "item.h"
 
+#include "infowindow.h"
+
 class GameManager : public sf::Drawable {
 
 private:
@@ -17,6 +19,8 @@ private:
   bool itemcheck = true;
   Point mapOrigin = Point(100,100);
 
+  InfoWindow iw;
+
   void moveCharacter(int dx, int dy);
   bool checkMovement(int x, int y, bool action);
   bool checkMovement(GridPoint d, bool action) { return checkMovement(d.x, d.y, action); }
@@ -28,6 +32,7 @@ public:
   void setMapObjectPosition(MapObject& go, GridPoint point);
   // void setCharacterPosition(Character& ch, GridPoint point);
   void postTurn() { map.updateMap(); }
+  void drawInfo() { iw.setPlayerPosition(p1.getGridPosition()); iw.drawWindow(); }
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
     target.draw(map, states);
     // target.draw(p1, states);

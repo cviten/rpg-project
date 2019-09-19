@@ -4,6 +4,7 @@
 #include "map.h"
 #include "character.h"
 #include "item.h"
+#include "hud.h"
 
 #include "infowindow.h"
 
@@ -12,12 +13,13 @@ class GameManager : public sf::Drawable {
 private:
   /* data */
   Map map;
+  HUD hud;
 
   PlayerCharacter p1;
   Character bot;
   ItemObject item;
   bool itemcheck = true;
-  Point mapOrigin = Point(100,100);
+  Point mapOrigin = Point(10,10);
 
   InfoWindow iw;
 
@@ -40,6 +42,8 @@ public:
     if (p1.isActive()) { target.draw(p1, states); }
     if (bot.isActive()) { target.draw(bot, states); }
     if (item.isActive()) { target.draw(item, states); }
+
+    target.draw(hud, states);
   };
 };
 

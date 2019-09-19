@@ -61,6 +61,9 @@ namespace Game {
     const sf::Color defeatedBot(120, 40, 50);
     const sf::Color item(55, 145, 200);
   }
+  namespace UI {
+    const Size HealthBarSize(200,30);
+  } /* UI */
 } /* Game */
 
 #endif /* end of include guard: COMMON */

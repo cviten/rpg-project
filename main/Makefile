@@ -1,6 +1,6 @@
 all: grid-test2.cpp # main # imgui.o
 	# g++ main.o imgui.o -lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app
-	g++ map.cpp mapobject.cpp character.cpp item.cpp gamemanager.cpp infowindow.cpp grid-test2.cpp \
+	g++ map.cpp mapobject.cpp character.cpp item.cpp gamemanager.cpp infowindow.cpp hud.cpp grid-test2.cpp \
 	./SFML-imgui/libimgui.a \
 	-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app
 

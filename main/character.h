@@ -2,6 +2,7 @@
 #define CHARACTER
 
 #include "mapobject.h"
+#include "item.h"
 
 struct Stats {
   /* data */

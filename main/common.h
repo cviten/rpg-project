@@ -14,6 +14,9 @@ struct XY {
   bool operator== (const XY& p) const { return (x == p.x && y == p.y);}
 protected:
   XY(int _x, int _y) : x(_x), y(_y) {}
+public:
+  XY(const sf::Vector2f& p) : x(p.x), y(p.y) {}
+  XY& operator= (const sf::Vector2f& p) { x == p.x; y = p.y; return *this; }
   // XY() : XY (50,50) {}
 };
 
@@ -27,6 +30,11 @@ struct Point : XY {
   Point() : Point (50,50) {}
 };
 
+struct Size : XY {
+  Size(int x, int y) : XY(x,y) {}
+  Size() : Size (50,50) {}
+};
+
 struct GridSize : XY {
   GridSize(int x, int y) : XY(x,y) {}
   GridSize() : GridSize (5,5) {}
@@ -35,6 +43,12 @@ struct GridSize : XY {
 struct GridPoint : XY {
   GridPoint(int x, int y) : XY(x,y) {}
   GridPoint() : GridPoint (0,0) {}
+};
+
+struct Rect {
+  Point point;
+  Size size;
+  Rect(Point point, Size size size) : point(point), size(size) {}
 };
 
 const CellSize tileSize(30,30);

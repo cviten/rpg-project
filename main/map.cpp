@@ -35,8 +35,8 @@ void Map::updateDraw() {
   m_vertices2.setPrimitiveType(sf::Quads);
   m_vertices2.resize(mapsize.x * mapsize.y * 4);
 
-  for (unsigned int i = 0; i < mapsize.x; ++i) {
-    for (unsigned int j = 0; j < mapsize.y; ++j) {
+  for (int i = 0; i < mapsize.x; ++i) {
+    for (int j = 0; j < mapsize.y; ++j) {
       // get the current tile number
       // int tileNumber = tiles[i + j * mapsize.x];
 

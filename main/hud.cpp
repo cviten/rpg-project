@@ -1,6 +1,6 @@
 #include "hud.h"
 
-const std::string defaultFontFile = "font.ttf";
+const std::string defaultFontFile = "font1.ttf";
 
 sf::Font loadDefaultFont() {
   sf::Font font;
@@ -10,14 +10,13 @@ sf::Font loadDefaultFont() {
 
 sf::Font defaultFont = loadDefaultFont();
 
-Bar::Bar(sf::Color barColor, Point origin, Size size, Meter meter) {
+Bar::Bar(sf::Color barColor, Point origin, Size size, Meter meter) : meter(meter) {
   back.setSize(size);
   back.setFillColor(sf::Color::Black);
   back.setPosition(origin);
 
   bar.setSize(size);
-  // bar.setFillColor(barColor);
-  bar.setFillColor(sf::Color::Red);
+  bar.setFillColor(barColor);
   bar.setPosition(origin);
 
   // curr = 50;

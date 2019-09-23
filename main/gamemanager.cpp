@@ -2,7 +2,7 @@
 
 #include "gamemanager.h"
 
-GameManager::GameManager() : p1(mapOrigin), bot(mapOrigin), item(mapOrigin), map(GridSize(20,15)) {
+GameManager::GameManager() : map(GridSize(20,15)), p1(mapOrigin), bot(mapOrigin), item(mapOrigin) {
   map.setPosition(mapOrigin);
   // p1i.setScreenPosition(mapOrigin); //Find a way to make it more clean
 

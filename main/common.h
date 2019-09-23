@@ -16,7 +16,7 @@ protected:
   XY(int _x, int _y) : x(_x), y(_y) {}
 public:
   XY(const sf::Vector2f& p) : x(p.x), y(p.y) {}
-  XY& operator= (const sf::Vector2f& p) { x == p.x; y = p.y; return *this; }
+  XY& operator= (const sf::Vector2f& p) { x = p.x; y = p.y; return *this; }
   // XY() : XY (50,50) {}
 };
 

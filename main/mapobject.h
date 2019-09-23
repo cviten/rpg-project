@@ -10,8 +10,8 @@ private:
   /* data */
   sf::RectangleShape sprite;
   sf::Transformable transform;
-  GridPoint position;
   bool pass;
+  GridPoint position;
   bool edge = true;
   bool active = true;
 

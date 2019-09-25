@@ -1,4 +1,5 @@
 #include "hud.h"
+// #include <iostream>
 
 const std::string defaultFontFile = "font1.ttf";
 
@@ -14,6 +15,9 @@ Bar::Bar(sf::Color barColor, Point origin, Size size, Meter meter) : meter(meter
   back.setSize(size);
   back.setFillColor(sf::Color::Black);
   back.setPosition(origin);
+
+  back.setOutlineThickness(2.5);
+  back.setOutlineColor(sf::Color::White);
 
   bar.setSize(size);
   bar.setFillColor(barColor);
@@ -37,7 +41,8 @@ void Bar::setPosition(Point origin) {
 }
 
 void Bar::update() {
-  float per = (meter.max - meter.min) / meter.curr;
+  float per = (meter.curr * 1.0) / ((meter.max - meter.min) * 1.0);
+  // std::cerr <<"max: " << meter.max << "min: " << meter.min << "curr: " << meter.curr << "per: " << per << '\n';
   sf::Vector2f barSize = back.getSize();
   barSize.x *= per;
   bar.setSize(barSize);
@@ -50,9 +55,32 @@ void Bar::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   target.draw(bar, states);
 };
 
+void HUDItem::setValue(int val) {
+  bar.set(val);
+}
+void HUDItem::changeRange(int maxValue, int currValue) {
+  bar.set(maxValue, currValue);
+}
+
+void HUDItem::changeRange(int maxValue) {
+  changeRange(maxValue, maxValue);
+}
+
 void HUDItem::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   target.draw(label, states);
   target.draw(bar, states);
+}
+
+void HUD::setHealth(int hp) {
+  health.setValue(hp);
+}
+
+void HUD::setHealthBar(int maxHP, int curr) {
+  health.changeRange(maxHP, curr);
+}
+
+void HUD::setHealthBar(int maxHP) {
+  setHealthBar(maxHP, maxHP);
 }
 
 void HUD::draw(sf::RenderTarget& target, sf::RenderStates states) const {

@@ -14,11 +14,18 @@ GameManager::GameManager() : map(GridSize(20,15)), p1(mapOrigin), bot(mapOrigin)
   setMapObjectPosition(bot, GridPoint(4,2));
   setMapObjectPosition(item, GridPoint(2,7));
 
+  hud.setHealth(50);
+
   // map.makeMount(2,3,4,2);
   map.updateMap();
 
   // map.showVisMap();
   map.showNormalMap();
+}
+
+void GameManager::drawInfo() {
+  iw.setPlayerPosition(p1.getGridPosition());
+  iw.drawWindow();
 }
 
 void GameManager::setMapObjectPosition(MapObject& ch, GridPoint point) {
@@ -53,8 +60,6 @@ bool GameManager::checkMovement(int x, int y, bool action) {
 }
 
 void GameManager::readEventKey(sf::Keyboard::Key key) {
-
-
   if (key == sf::Keyboard::Up) { moveCharacter(0,-1); }
   if (key == sf::Keyboard::Down) { moveCharacter(0,1); }
   if (key == sf::Keyboard::Left) { moveCharacter(-1,0); }

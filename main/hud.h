@@ -29,8 +29,8 @@ public:
   // Bar (sf::Color barColor, ) :  {}
   // Bar () :  Bar(sf::Color::Red,0,100,100) {}
   void setPosition(Point origin);
-  void set(int curr) { meter.curr = curr; }
-  void set(int max, int curr) { meter.curr = curr; meter.max = max; }
+  void set(int curr) { meter.curr = curr; update(); }
+  void set(int max, int curr) { meter.curr = curr; meter.max = max; update(); }
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
   // ~Bar ();
 };
@@ -47,6 +47,9 @@ public:
   HUDItem (std::string text, sf::Color barColor, Point origin, Size size = Game::UI::HealthBarSize, Meter meter = Meter());
   // HUDItem (std::string text, sf::Color barColor, Rect rect, Meter meter);
   // ~HUDItem ();
+  void setValue(int val);
+  void changeRange(int maxValue, int currValue);
+  void changeRange(int maxValue);
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
 
@@ -58,6 +61,9 @@ private:
 public:
   HUD () : health("Health", sf::Color::Red, Point(20,500)) {};
   // ~HUD ();
+  void setHealth(int hp);
+  void setHealthBar(int maxHP, int curr);
+  void setHealthBar(int maxHP);
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
 

@@ -34,7 +34,7 @@ public:
   void setMapObjectPosition(MapObject& go, GridPoint point);
   // void setCharacterPosition(Character& ch, GridPoint point);
   void postTurn() { map.updateMap(); }
-  void drawInfo() { iw.setPlayerPosition(p1.getGridPosition()); iw.drawWindow(); }
+  void drawInfo(); // { iw.setPlayerPosition(p1.getGridPosition()); iw.drawWindow(); }
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
     target.draw(map, states);
     // target.draw(p1, states);

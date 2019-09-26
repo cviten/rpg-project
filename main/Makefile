@@ -1,4 +1,4 @@
-all: grid-test2.cpp # main # imgui.o
+build: grid-test2.cpp # main # imgui.o
 	# g++ main.o imgui.o -lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app
 	g++ map.cpp mapobject.cpp character.cpp item.cpp gamemanager.cpp infowindow.cpp hud.cpp grid-test2.cpp \
 	./SFML-imgui/libimgui.a \
@@ -17,5 +17,14 @@ main: map.cpp mapobject.cpp character.cpp item.cpp gamemanager.cpp grid-test2.cp
 
 # imgui-SFML.cpp imgui.cpp imgui_demo.cpp imgui_draw.cpp imgui_widgets.cpp
 
-test: grid-test2.cpp
-	cppcheck grid-test2.cpp --enable=all
+test: map.cpp hud.cpp ./tests/hudtests.h ./tests/maptests.h ./tests/maintest.cpp # mapobject.cpp character.cpp item.cpp gamemanager.cpp infowindow.cpp hud.cpp grid-test2.cpp
+	g++ map.cpp hud.cpp ./tests/maintest.cpp \
+	-lgtest -lgtest_main \
+	-lsfml-graphics -lsfml-window -lsfml-system \
+	-o test
+
+runtest : test
+	./test
+
+# -lgtest -lgtest_main
+# ./SFML-imgui/libimgui.a

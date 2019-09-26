@@ -2,6 +2,15 @@
 
 Map::Terrian::Terrian() : Map::Terrian::Terrian(MapTiles::wip) {}
 
+Map::Map(GridSize size) try : mapsize(size) , map(mapsize.x * mapsize.y, Terrian()) {
+  if (size.x < 1 || size.y < 1) {
+    throw MapException("Wrong size for map");
+  }
+  updateDraw();
+} catch (std::bad_alloc &e) {
+  throw MapException("Wrong size for map");
+}
+
 void Map::updateMap() {
   if (mapChanged) {
     updateDraw();

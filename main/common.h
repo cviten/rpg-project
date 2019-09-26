@@ -2,6 +2,8 @@
 #define COMMON
 
 #include <SFML/Graphics.hpp>
+#include <exception>
+#include <stdexcept>
 
 const int gameWidth = 1000;
 const int gameHeight = 700;

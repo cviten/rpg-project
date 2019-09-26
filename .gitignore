@@ -6,4 +6,5 @@
 *.ttf
 *.otf
 *.log
-*.ini
+app
+test

@@ -3,6 +3,11 @@
 
 #include "common.h"
 
+class MapException : std::logic_error {
+public:
+  MapException (std::string arg) : std::logic_error(arg) {}
+};
+
 class Map : public sf::Drawable, public sf::Transformable {
 public:
   struct Terrian {
@@ -34,7 +39,7 @@ private:
   void updateDraw();
 
 public:
-  explicit Map (GridSize size) : mapsize(size) , map(mapsize.x * mapsize.y, Terrian()) { updateDraw(); }
+  explicit Map (GridSize size);
   // Map () : mapsize(10,10) , map(mapsize.x * mapsize.y, Terrian()) { updateDraw(); }
   Map () : Map(GridSize(10,10)) { }
   const Terrian& getTerrianCell(int x, int y) const;

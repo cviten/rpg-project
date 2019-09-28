@@ -45,7 +45,7 @@ public:
   GridSize getMapSize() const { return mapsize; }
   void showNormalMap() { vismap = false; mapChanged = true; }
   void showVisMap() { vismap = true; mapChanged = true;}
-  void showGrid(bool visible) { gridVisible = true; mapChanged = true; }
+  void showGrid(bool visible) { gridVisible = visible; mapChanged = true; }
   void toggleGrid() { gridVisible = !gridVisible; mapChanged = true; }
   void toggleVisMap() { vismap = !vismap; mapChanged = true; }
   // const std::vector<Terrian> getMap() { return map; }

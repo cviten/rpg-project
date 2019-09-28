@@ -3,8 +3,9 @@
 
 #include "gamemanager.h"
 
-int main(int argc, char const *argv[]) {
+int main() {
   sf::RenderWindow window(sf::VideoMode(gameWidth, gameHeight), "Grid movement", sf::Style::Titlebar | sf::Style::Close);
+  window.setFramerateLimit(60);
   ImGui::SFML::Init(window);
   sf::Clock clock;
   // float deltaTime;
@@ -46,6 +47,7 @@ int main(int argc, char const *argv[]) {
     // window.draw(gm);
     window.draw(gm);
     gm.drawInfo();
+    ImGui::ShowTestWindow();
     ImGui::SFML::Render(window);
 
     window.display();

@@ -22,7 +22,7 @@ private:
   int currHP;
 
 public:
-  Character (Point point, sf::Color spriteColor = Game::Colors::bot, const std::string& name = "Bot", Stats stats = Stats()) : MapObject(point,spriteColor), currHP(stats.maxHP) {}
+  Character (Point point, sf::Color spriteColor = Game::Colors::bot, const std::string& name = "Bot", Stats stats = Stats()) : MapObject(point,spriteColor), name(name), stats(stats), currHP(stats.maxHP) {}
   const std::string& getName() const { return name;}
   const Stats& getStats() const { return stats; }
   void takeDamage(int atk) { currHP -= atk; if (currHP <= 0) { changeColor(Game::Colors::defeatedBot); setActive(false); }; }

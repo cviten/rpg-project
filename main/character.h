@@ -14,6 +14,12 @@ struct Stats {
 
 
 class Character : public MapObject {
+public:
+  struct Status {
+    Stats stats;
+    int currHP;
+    Status(Stats stats, int HP) : stats(stats), currHP(HP) {}
+  };
 private:
   /* data */
   std::string name;
@@ -25,6 +31,8 @@ public:
   Character (Point point, sf::Color spriteColor = Game::Colors::bot, const std::string& name = "Bot", Stats stats = Stats()) : MapObject(point,spriteColor), name(name), stats(stats), currHP(stats.maxHP) {}
   const std::string& getName() const { return name;}
   const Stats& getStats() const { return stats; }
+  Status getStatus() const { return Status(stats,currHP); }
+  void restoreHealth(int heal) { int fullheal = currHP + heal; currHP = (fullheal > stats.maxHP) ? stats.maxHP : fullheal; }
   void takeDamage(int atk) { currHP -= atk; if (currHP <= 0) { changeColor(Game::Colors::defeatedBot); setActive(false); }; }
   void attack(Character& target) { target.takeDamage(getStats().atk); }
   // ~Character ();

@@ -15,6 +15,7 @@ GameManager::GameManager() : map(GridSize(20,15)), p1(mapOrigin), bot(mapOrigin)
   setMapObjectPosition(item, GridPoint(2,7));
 
   hud.setHealth(50);
+  p1.takeDamage(20);
 
   // map.makeMount(2,3,4,2);
   map.updateMap();
@@ -25,6 +26,8 @@ GameManager::GameManager() : map(GridSize(20,15)), p1(mapOrigin), bot(mapOrigin)
 
 void GameManager::drawInfo() {
   iw.setPlayerPosition(p1.getGridPosition());
+  CharacterStatus p1stat(p1.getName(), p1.getStatus().currHP, p1.getStatus().stats.maxHP, p1.getStatus().stats.atk);
+  iw.setStatus(p1stat);
   iw.drawWindow();
 }
 
@@ -53,6 +56,7 @@ bool GameManager::checkMovement(int x, int y, bool action) {
       // std::cout << "Can't go into " << enemy.getCharacter().getName() << '\n';
       item.setActive(false);
       std::cout << "Player got " << item.getName() << '\n';
+      item.getItem().use(p1);
       return true;
     }
   }

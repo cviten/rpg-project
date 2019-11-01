@@ -1,14 +1,30 @@
-build: grid-test2.cpp # main # imgui.o
+build: comp
+	cd ./obj && \
+	g++ map.o mapobject.o character.o item.o  gamemanager.o infowindow.o hud.o gameaction.o grid-test2.o \
+		../SFML-imgui/libimgui.a \
+		-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app && \
+		mv ./app ../
+
+
+comp: grid-test2.cpp
+	g++ map.cpp mapobject.cpp character.cpp item.cpp  gamemanager.cpp infowindow.cpp hud.cpp gameaction.cpp grid-test2.cpp \
+		-c \
+		-Wall -Wextra \
+		> compile-errors.log 2>&1 && \
+	mv ./*.o ./obj/
+
+
+all: grid-test2.cpp # main # imgui.o
 	# g++ main.o imgui.o -lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app
 	g++ map.cpp mapobject.cpp character.cpp item.cpp  gamemanager.cpp infowindow.cpp hud.cpp gameaction.cpp grid-test2.cpp \
-	./SFML-imgui/libimgui.a \
-	-Wall -Wextra \
-	-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app \
-	> compile-errors.log 2>&1
+		./SFML-imgui/libimgui.a \
+		-Wall -Wextra \
+		-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app \
+		> compile-errors.log 2>&1
 
 main: map.cpp mapobject.cpp character.cpp item.cpp gamemanager.cpp grid-test2.cpp
 	g++ -c map.cpp mapobject.cpp character.cpp item.cpp gamemanager.cpp grid-test2.cpp \
-	-Wall -Wextra
+		-Wall -Wextra
 	# mv *.o ./bin/
 
 #imgui.o: ./SFML-imgui/imgui-SFML.cpp ./GUI/SFML-imgui/imgui.cpp ./GUI/SFML-imgui/imgui_demo.cpp ./GUI/SFML-imgui/imgui_draw.cpp ./GUI/SFML-imgui/imgui_widgets.cpp

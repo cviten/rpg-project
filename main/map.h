@@ -2,10 +2,15 @@
 #define MAP
 
 #include "common.h"
+#include <iostream>
 
 class MapException : std::logic_error {
+  std::string msg;
+  XY xy;
 public:
-  MapException (std::string arg) : std::logic_error(arg) {}
+  // MapException (std::string arg) : std::logic_error(arg) {}
+  MapException (std::string arg, int x, int y) : std::logic_error(arg), msg(arg), xy(x,y) {}
+  // std::string show() const noexcept { std::cerr << msg << "; Parameters: " << xy.x << ", " << xy.y << '\n'; }
 };
 
 class Map : public sf::Drawable, public sf::Transformable {

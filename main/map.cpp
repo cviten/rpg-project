@@ -4,11 +4,11 @@ Map::Terrian::Terrian() : Map::Terrian::Terrian(MapTiles::wip) {}
 
 Map::Map(GridSize size) try : mapsize(size) , map(mapsize.x * mapsize.y, Terrian()) {
   if (size.x < 1 || size.y < 1) {
-    throw MapException("Wrong size for map");
+    throw MapException("Wrong size for map", size.x, size.y);
   }
   updateDraw();
 } catch (std::bad_alloc &e) {
-  throw MapException("Wrong size for map");
+  throw MapException("Wrong size for map", size.x, size.y);
 }
 
 void Map::updateMap() {
@@ -18,8 +18,11 @@ void Map::updateMap() {
 }
 
 const Map::Terrian& Map::getTerrianCell(int x, int y) const {
-
-  return map.at(x + y * mapsize.x);
+  try {
+      return map.at(x + y * mapsize.x);
+  } catch (std::out_of_range &e) {
+    throw MapException("Got outside of map", x,y);
+  }
 }
 
 void Map::fill(const Terrian& tile, int x, int y, int sizeX, int sizeY) {

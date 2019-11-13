@@ -43,7 +43,7 @@ private:
   // std::string name;
 
 public:
-  ItemObject (Point point, sf::Color spriteColor = Game::Colors::item) : MapObject(point, spriteColor, true) {}
+  ItemObject (Point point, sf::Color spriteColor = Game::Colors::item) : MapObject(point, spriteColor, MapObject::MapObjectType::Item, true) {}
   const std::string& getName() const { return item.getName(); }
   Item& getItem() { return item; }
   // ~Item ();

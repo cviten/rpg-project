@@ -35,6 +35,11 @@ public:
   // void setCharacterPosition(Character& ch, GridPoint point);
   void postTurn() { map.updateMap(); }
   void drawInfo(); // { iw.setPlayerPosition(p1.getGridPosition()); iw.drawWindow(); }
+
+  //-----------------------
+  void CharPickUp(Character& charcter, ItemObject& item);
+  void CharAttack(Character& attacker, Character& target);
+  //-----------------------
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
     target.draw(map, states);
     // target.draw(p1, states);

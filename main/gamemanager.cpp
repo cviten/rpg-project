@@ -49,14 +49,13 @@ bool GameManager::checkMovement(int x, int y, bool action) {
   } else if (action) {
     if (GridPoint(x,y) == bot.getGridPosition() && bot.isActive()) {
       // std::cout << "Can't go into " << enemy.getCharacter().getName() << '\n';
-      p1.attack(bot);
-      std::cout << "Attacked " << bot.getName() << '\n';
+      // p1.attack(bot);
+      // std::cout << "Attacked " << bot.getName() << '\n';
+      CharAttack(p1, bot);
       return false;
     } else if (GridPoint(x,y) == item.getGridPosition() && item.isActive()) {
       // std::cout << "Can't go into " << enemy.getCharacter().getName() << '\n';
-      item.setActive(false);
-      std::cout << "Player got " << item.getName() << '\n';
-      item.getItem().use(p1);
+      CharPickUp(p1, item);
       return true;
     }
   }
@@ -77,4 +76,16 @@ void GameManager::moveCharacter(int dx, int dy) {
   if (checkMovement(p1.getGridPosition().x + dx, p1.getGridPosition().y + dy, true)) {
     p1.move(dx,dy);
   }
+}
+
+void GameManager::CharPickUp(Character& charcter, ItemObject& item) {
+  item.setActive(false);
+  doAction(charcter, GetItemAction());
+  // std::cout << "Player got " << item.getName() << '\n';
+  item.getItem().use(charcter);
+}
+
+void GameManager::CharAttack(Character& attacker, Character& target) {
+  std::cout << attacker.getName() << " attacked " << target.getName() << '\n';
+  doAction(target, DamageAction(attacker.getStats().atk));
 }

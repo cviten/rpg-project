@@ -4,8 +4,8 @@
 #include "common.h"
 
 class MapObject : public sf::Drawable {
-// public:
-  // enum MapObjectType {Char, Item};
+public:
+  enum class MapObjectType {Special, Char, Item};
 private:
   /* data */
   sf::RectangleShape sprite;
@@ -14,12 +14,13 @@ private:
   GridPoint position;
   bool edge = true;
   bool active = true;
+  MapObjectType type;
 
 protected:
   void changeColor(const sf::Color color) { sprite.setFillColor(color); }
 
 public:
-  MapObject (Point point, sf::Color spriteColor, bool pass = false, GridPoint startPoint = GridPoint());
+  MapObject (Point point, sf::Color spriteColor, MapObjectType type = MapObjectType::Special, bool pass = false, GridPoint startPoint = GridPoint());
   void move(int dx, int dy);
   void move(GridPoint dp) { move(dp.x, dp.y); }
   const GridPoint& getGridPosition() const { return position; }
@@ -37,6 +38,17 @@ public:
   bool isActive() const { return active; }
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
+
+class NullMapObject : public MapObject {
+private:
+  /* data */
+
+public:
+  NullMapObject() : MapObject(Point(0,0), sf::Color(0,0,0,255), MapObjectType::Special ,true) {}
+  // ~NullMapObject ();
+};
+
+const NullMapObject& getNullMapObject();
 
 
 #endif /* end of include guard: MAPOBJECT */

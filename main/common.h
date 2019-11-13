@@ -14,9 +14,9 @@ struct XY {
   int y = 0;
   operator sf::Vector2f() const { return sf::Vector2f(x,y); }
   bool operator== (const XY& p) const { return (x == p.x && y == p.y);}
-protected:
-  XY(int _x, int _y) : x(_x), y(_y) {}
+// protected:
 public:
+  XY(int _x, int _y) : x(_x), y(_y) {}
   XY(const sf::Vector2f& p) : x(p.x), y(p.y) {}
   XY& operator= (const sf::Vector2f& p) { x = p.x; y = p.y; return *this; }
   // XY() : XY (50,50) {}

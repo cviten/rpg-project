@@ -1,6 +1,6 @@
 #include "mapobject.h"
 
-MapObject::MapObject(Point point, sf::Color color, bool pass, GridPoint startPoint) : pass(pass), position(startPoint) {
+MapObject::MapObject(Point point, sf::Color color, MapObjectType type, bool pass, GridPoint startPoint) : pass(pass), position(startPoint), type(type) {
   sprite.setSize(tileSize);
   sprite.setFillColor(color);
   transform.setPosition(point.x, point.y);
@@ -26,3 +26,9 @@ void MapObject::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   // target.draw(character, states);
   target.draw(sprite, states);
 };
+
+
+const NullMapObject& getNullMapObject() {
+ static NullMapObject nullobj;
+ return nullobj;
+}

@@ -30,8 +30,19 @@ public:
 class NullAction : public CharacterAction {
 public:
   // NullAction () : NullAction() {}
-  void action(Character& target) const override { std::cout << "Null Action" << '\n'; }
+  void action(Character& target) const override;
   // ~HealAction ();
+};
+
+class MoveAction : public CharacterAction {
+private:
+  /* data */
+  int x, y;
+
+public:
+  MoveAction (int x, int y) : x(x), y(y) {}
+  void action(Character& target) const override;
+  // ~MoveAction ();
 };
 
 class HealAction : public CharacterAction {
@@ -56,6 +67,18 @@ public:
   // ~HealAction ();
 };
 
+class GetItemAction : public CharacterAction {
+private:
+  /* data */
+
+public:
+  // GetItemAction () {}
+  void action(Character& target) const override;
+  // ~GetItemAction ();
+};
+
+void doAction(Character& target, const CharacterAction& action);
+void doAction(Character& target, const std::unique_ptr<CharacterAction>& action);
 // namespace Actions {
 //   const NullAction null;
 //   const HealAction heal(30);

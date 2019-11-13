@@ -13,6 +13,20 @@ comp: grid-test2.cpp
 		> compile-errors.log 2>&1 && \
 	mv ./*.o ./obj/
 
+build-simple: comp-simple
+	cd ./obj && \
+	g++ map.o mapobject.o character.o item.o  gamemanager.o infowindow.o hud.o gameaction.o grid-test2.o \
+		../SFML-imgui/libimgui.a \
+		-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app && \
+	mv ./app ../
+
+
+comp-simple: grid-test2.cpp
+	g++ map.cpp mapobject.cpp character.cpp item.cpp  gamemanager.cpp infowindow.cpp hud.cpp gameaction.cpp grid-test2.cpp \
+		-c -g3 \
+		> compile-errors.log 2>&1 && \
+	mv ./*.o ./obj/
+
 
 all: grid-test2.cpp # main # imgui.o
 	# g++ main.o imgui.o -lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app

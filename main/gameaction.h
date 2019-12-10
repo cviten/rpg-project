@@ -5,6 +5,16 @@
 #include <iostream>
 
 class Character;
+class CharacterObject;
+
+class GameActionException : std::logic_error {
+private:
+  /* data */
+
+public:
+  GameActionException (std::string msg) : std::logic_error(msg) {}
+  // ~GameActionException ();
+};
 
 class GameAction {
 private:
@@ -24,6 +34,7 @@ private:
 public:
   // CharacterAction ();
   virtual void action(Character& target) const = 0;
+  virtual void action(CharacterObject& target) const;
   // ~CharacterAction ();
 };
 
@@ -42,6 +53,7 @@ private:
 public:
   MoveAction (int x, int y) : x(x), y(y) {}
   void action(Character& target) const override;
+  void action(CharacterObject& target) const override;
   // ~MoveAction ();
 };
 
@@ -79,6 +91,8 @@ public:
 
 void doAction(Character& target, const CharacterAction& action);
 void doAction(Character& target, const std::unique_ptr<CharacterAction>& action);
+void doAction(CharacterObject& target, const CharacterAction& action);
+void doAction(CharacterObject& target, const std::unique_ptr<CharacterAction>& action);
 // namespace Actions {
 //   const NullAction null;
 //   const HealAction heal(30);

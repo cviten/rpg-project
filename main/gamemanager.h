@@ -15,8 +15,8 @@ private:
   Map map;
   HUD hud;
 
-  PlayerCharacter p1;
-  Character bot;
+  PlayerObject p1;
+  CharacterObject bot;
   ItemObject item;
   bool itemcheck = true;
   Point mapOrigin = Point(10,10);
@@ -37,8 +37,10 @@ public:
   void drawInfo(); // { iw.setPlayerPosition(p1.getGridPosition()); iw.drawWindow(); }
 
   //-----------------------
-  void CharPickUp(Character& charcter, ItemObject& item);
+  void CharPickUp(Character& character, ItemObject& item);
+  void CharPickUp(CharacterObject& character, ItemObject& item);
   void CharAttack(Character& attacker, Character& target);
+  void CharAttack(CharacterObject& attacker, CharacterObject& target);
   //-----------------------
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
     target.draw(map, states);

@@ -3,6 +3,7 @@
 *.app
 *.a
 *.o
+*.ini
 *.ttf
 *.otf
 *.log

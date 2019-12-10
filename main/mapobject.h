@@ -6,6 +6,7 @@
 class MapObject : public sf::Drawable {
 public:
   enum class MapObjectType {Special, Char, Item};
+  // static Point mapOrigin = Point(10,10);
 private:
   /* data */
   sf::RectangleShape sprite;
@@ -17,10 +18,10 @@ private:
   MapObjectType type;
 
 protected:
-  void changeColor(const sf::Color color) { sprite.setFillColor(color); }
 
 public:
-  MapObject (Point point, sf::Color spriteColor, MapObjectType type = MapObjectType::Special, bool pass = false, GridPoint startPoint = GridPoint());
+  void changeColor(const sf::Color color) { sprite.setFillColor(color); }
+  MapObject (sf::Color spriteColor, MapObjectType type = MapObjectType::Special, bool pass = false, GridPoint startPoint = GridPoint());
   void move(int dx, int dy);
   void move(GridPoint dp) { move(dp.x, dp.y); }
   const GridPoint& getGridPosition() const { return position; }
@@ -44,7 +45,7 @@ private:
   /* data */
 
 public:
-  NullMapObject() : MapObject(Point(0,0), sf::Color(0,0,0,255), MapObjectType::Special ,true) {}
+  NullMapObject() : MapObject(sf::Color(0,0,0,255), MapObjectType::Special ,true) {}
   // ~NullMapObject ();
 };
 

@@ -2,8 +2,9 @@ build: comp
 	cd ./obj && \
 	g++ map.o mapobject.o character.o item.o  gamemanager.o infowindow.o hud.o gameaction.o grid-test2.o \
 		../SFML-imgui/libimgui.a \
-		-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app && \
-		mv ./app ../
+		-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app \
+		> link-errors.log 2>&1 && \
+		mv -t ../ ./app ./link-errors.log
 
 
 comp: grid-test2.cpp
@@ -17,8 +18,9 @@ build-simple: comp-simple
 	cd ./obj && \
 	g++ map.o mapobject.o character.o item.o  gamemanager.o infowindow.o hud.o gameaction.o grid-test2.o \
 		../SFML-imgui/libimgui.a \
-		-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app && \
-	mv ./app ../
+		-lsfml-graphics -lsfml-window -lsfml-system -lGLU -lGL -lglut -o app \
+		> link-errors.log 2>&1 && \
+	mv -t ../ ./app ./link-errors.log
 
 
 comp-simple: grid-test2.cpp
@@ -47,11 +49,12 @@ main: map.cpp mapobject.cpp character.cpp item.cpp gamemanager.cpp grid-test2.cp
 
 # imgui-SFML.cpp imgui.cpp imgui_demo.cpp imgui_draw.cpp imgui_widgets.cpp
 
-test: map.cpp hud.cpp ./tests/hudtests.h ./tests/maptests.h ./tests/maintest.cpp # mapobject.cpp character.cpp item.cpp gamemanager.cpp infowindow.cpp hud.cpp grid-test2.cpp
-	g++ map.cpp hud.cpp ./tests/maintest.cpp \
+test: map.cpp hud.cpp character.cpp ./tests/maintest.cpp # mapobject.cpp character.cpp item.cpp gamemanager.cpp infowindow.cpp hud.cpp grid-test2.cpp
+	g++ map.cpp hud.cpp character.cpp ./tests/maintest.cpp \
 	-lgtest -lgtest_main \
 	-lsfml-graphics -lsfml-window -lsfml-system \
-	-o test
+	-o test \
+	> compile-errors.log 2>&1
 
 runtest : test
 	./test

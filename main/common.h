@@ -56,13 +56,22 @@ struct Rect {
 const CellSize tileSize(30,30);
 const GridPoint zeroGrid(0,0);
 
+const Point mapOrigin(10,10);
+
+// namespace  {
+    // extern Point mapOrigin; //= Point(10,10);
+// } /* */
+
+// void setMapOrigin(Point point);
+// Point getMapOrigin();
+
 namespace Game {
   namespace Colors {
     const sf::Color player(165, 70, 200);
     const sf::Color bot(200, 70, 70);
     const sf::Color defeatedBot(120, 40, 50);
     const sf::Color item(55, 145, 200);
-  }
+  } /* Colors */
   namespace UI {
     const Size HealthBarSize(200,30);
   } /* UI */

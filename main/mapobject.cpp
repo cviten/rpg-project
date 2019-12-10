@@ -1,9 +1,9 @@
 #include "mapobject.h"
 
-MapObject::MapObject(Point point, sf::Color color, MapObjectType type, bool pass, GridPoint startPoint) : pass(pass), position(startPoint), type(type) {
+MapObject::MapObject(sf::Color color, MapObjectType type, bool pass, GridPoint startPoint) : pass(pass), position(startPoint), type(type) {
   sprite.setSize(tileSize);
   sprite.setFillColor(color);
-  transform.setPosition(point.x, point.y);
+  transform.setPosition(mapOrigin.x, mapOrigin.y);
   move(startPoint);
 }
 

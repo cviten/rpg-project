@@ -2,7 +2,7 @@
 
 #include "gamemanager.h"
 
-GameManager::GameManager() : map(GridSize(20,15)), p1(mapOrigin), bot(mapOrigin), item(mapOrigin) {
+GameManager::GameManager() : map(GridSize(20,15)) {
   map.setPosition(mapOrigin);
   // p1i.setScreenPosition(mapOrigin); //Find a way to make it more clean
 
@@ -15,7 +15,8 @@ GameManager::GameManager() : map(GridSize(20,15)), p1(mapOrigin), bot(mapOrigin)
   setMapObjectPosition(item, GridPoint(2,7));
 
   hud.setHealth(50);
-  p1.takeDamage(20);
+  // p1.takeDamage(20);
+  doAction(p1, DamageAction(20));
 
   // map.makeMount(2,3,4,2);
   map.updateMap();
@@ -25,10 +26,10 @@ GameManager::GameManager() : map(GridSize(20,15)), p1(mapOrigin), bot(mapOrigin)
 }
 
 void GameManager::drawInfo() {
-  iw.setPlayerPosition(p1.getGridPosition());
-  CharacterStatus p1stat(p1.getName(), p1.getStatus().currHP, p1.getStatus().stats.maxHP, p1.getStatus().stats.atk);
-  iw.setStatus(p1stat);
-  iw.drawWindow();
+  // iw.setPlayerPosition(p1.getGridPosition());
+  // CharacterStatus p1stat(p1.getName(), p1.getStatus().currHP, p1.getStatus().stats.maxHP, p1.getStatus().stats.atk);
+  // iw.setStatus(p1stat);
+  // iw.drawWindow();
 }
 
 void GameManager::setMapObjectPosition(MapObject& ch, GridPoint point) {
@@ -74,18 +75,32 @@ void GameManager::readEventKey(sf::Keyboard::Key key) {
 
 void GameManager::moveCharacter(int dx, int dy) {
   if (checkMovement(p1.getGridPosition().x + dx, p1.getGridPosition().y + dy, true)) {
-    p1.move(dx,dy);
+    // p1.move(dx,dy);
+    doAction(p1, MoveAction(dx,dy));
   }
 }
 
-void GameManager::CharPickUp(Character& charcter, ItemObject& item) {
+void GameManager::CharPickUp(Character& character, ItemObject& item) {
   item.setActive(false);
-  doAction(charcter, GetItemAction());
+  doAction(character, GetItemAction());
   // std::cout << "Player got " << item.getName() << '\n';
-  item.getItem().use(charcter);
+  item.getItem().use(character);
+}
+
+void GameManager::CharPickUp(CharacterObject& character, ItemObject& item) {
+  CharPickUp(character.getCharacterRef(), item);
+}
+
+void GameManager::CharAttack(CharacterObject& attacker, CharacterObject& target) {
+  CharAttack(attacker.getCharacterRef(), target.getCharacterRef());
+  if (target.isDead()) {
+    target.changeColor(Game::Colors::defeatedBot);
+    target.setActive(false);
+
+  }
 }
 
 void GameManager::CharAttack(Character& attacker, Character& target) {
   std::cout << attacker.getName() << " attacked " << target.getName() << '\n';
-  doAction(target, DamageAction(attacker.getStats().atk));
+  doAction(target, DamageAction(attacker.getStatus().getAttack()));
 }

@@ -8,11 +8,29 @@ void doAction(Character& target, const std::unique_ptr<CharacterAction>& act) {
   act->action(target);
 }
 
+void doAction(CharacterObject& target, const CharacterAction& act) {
+  act.action(target);
+}
+
+void doAction(CharacterObject& target, const std::unique_ptr<CharacterAction>& act) {
+  act->action(target);
+}
+
+void CharacterAction::action(CharacterObject& target) const {
+  action(target.getCharacterRef());
+}
+
+// --------
+
 void NullAction::action(Character& target) const {
   std::cout << "No effect on " << target.getName() << '\n';
 }
 
 void MoveAction::action(Character& target) const {
+  // target.move(x,y);
+  throw GameActionException("Invalid action for the character");
+}
+void MoveAction::action(CharacterObject& target) const {
   target.move(x,y);
 }
 

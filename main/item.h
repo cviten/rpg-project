@@ -21,6 +21,7 @@ class CharacterAction;
 class Item {
 private:
   /* data */
+  int id;
   std::string name;
   // ItemAction act;
   // const CharacterAction* act;
@@ -31,7 +32,8 @@ public:
   Item(const std::string& name, std::unique_ptr<CharacterAction> act);
   // Item(const std::string& name = "Item A", std::unique_ptr<CharacterAction> act = std::make_unique<HealAction>(30)) : name(name), act(std::move(act)) {}
   const std::string& getName() const { return name; }
-  void use(Character& target);
+  const int& getID() const { return id; }
+  void use(Character& target) const;
 };
 
 // Add ItemContainer?
@@ -43,7 +45,7 @@ private:
   // std::string name;
 
 public:
-  ItemObject (Point point, sf::Color spriteColor = Game::Colors::item) : MapObject(point, spriteColor, MapObject::MapObjectType::Item, true) {}
+  ItemObject (sf::Color spriteColor = Game::Colors::item) : MapObject(spriteColor, MapObject::MapObjectType::Item, true) {}
   const std::string& getName() const { return item.getName(); }
   Item& getItem() { return item; }
   // ~Item ();
